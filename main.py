@@ -3,6 +3,7 @@ from fastapi import FastAPI, Query, HTTPException
 from sqlalchemy import select
 from Connection import SessionDep, create_db_and_tables
 from models.technician import Technician, TechnicianResponse, TechnicianBase
+from fastapi.middleware.cors import CORSMiddleware
 from services.technicianService import (
     create_technician,
     get_technician,
@@ -16,6 +17,14 @@ from services.technicianService import (
 app = FastAPI(
     title= "API de Tecnicos",
     version= "1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.on_event("startup")
