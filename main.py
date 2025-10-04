@@ -3,6 +3,7 @@ from fastapi import FastAPI, Query, HTTPException
 from sqlalchemy import select
 from Connection import SessionDep, create_db_and_tables
 from models.technician import Technician, TechnicianResponse, TechnicianBase
+from models.technicianType import TechnicianType, TechnicianTypeBase
 from fastapi.middleware.cors import CORSMiddleware
 from services.technicianService import (
     create_technician,
@@ -10,6 +11,13 @@ from services.technicianService import (
     get_technician_by_id,
     delete_technician,
     update_technician,
+)
+from services.technicianTypeService import (
+    CreateTechnicianType,
+    GetTechnician,
+    GetTechnicianById,
+    DeleteTechnicianType,
+    UpdateTechnicianType,
 )
 
 
@@ -63,3 +71,34 @@ def editTechnician(technicianId: int, technician:TechnicianBase, session: Sessio
     if not technicianUpdate:
         raise HTTPException(status_code=404, detail="Technician not found")
     return technicianUpdate
+
+
+
+@app.post("/technicianType/",response_model=TechnicianType , tags=["TechnicianType"])
+def createTechnicianType(technicianType: TechnicianTypeBase, session: SessionDep):
+    return CreateTechnicianType(session, technicianType)
+
+@app.get("/technicianType/", response_model=List[TechnicianType], tags=["TechnicianType"])
+def getTechnicianType(session: SessionDep):
+    return GetTechnician(session)
+
+@app.get("/technicianType/{technicianTypeId}",response_model=TechnicianType, tags=["TechnicianType"])
+def getTechnicianTypeId(technicianTypeId: int, session: SessionDep):
+    technicianType = GetTechnicianById(session, technicianTypeId)
+    if not technicianType:
+        raise HTTPException(status_code=404, detail="Technician Type not found")
+    return technicianType
+
+@app.delete("/technicianType/{technicianTypeId}", tags=["TechnicianType"])
+def deleteTechnicianType(technicianTypeId: int, session: SessionDep):
+    technicianType = DeleteTechnicianType(session, technicianTypeId)
+    if not technicianType:
+        raise HTTPException(status_code=404, detail="Technician Type not found")
+    return {"OK" : True}
+
+@app.patch("/technicianType/{technicianTypeId}",response_model=TechnicianType, tags=["TechnicianType"])
+def editTechnicianType(technicianTypeId: int, technicianType:TechnicianTypeBase, session: SessionDep) :
+    technicianTypeUpdate = UpdateTechnicianType(session, technicianTypeId, technicianType)
+    if not technicianTypeUpdate:
+        raise HTTPException(status_code=404, detail="Technician Type not found")
+    return technicianTypeUpdate
