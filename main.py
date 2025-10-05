@@ -45,7 +45,7 @@ def root():
     return RedirectResponse(url="/docs")
 
 @app.post("/technician/",response_model=TechnicianResponse , tags=["Technician"])
-def createHero(technician: TechnicianBase, session: SessionDep):
+def createTechnician(technician: TechnicianBase, session: SessionDep):
     return create_technician(session, technician)
 
 @app.get("/technician/", response_model=List[TechnicianResponse], tags=["Technician"])
