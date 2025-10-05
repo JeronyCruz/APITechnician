@@ -44,11 +44,11 @@ def on_startup():
 def root():
     return RedirectResponse(url="/docs")
 
-@app.post("/technician/",response_model=Technician , tags=["Technician"])
+@app.post("/technician/",response_model=TechnicianResponse , tags=["Technician"])
 def createHero(technician: TechnicianBase, session: SessionDep):
     return create_technician(session, technician)
 
-@app.get("/technician/", response_model=List[Technician], tags=["Technician"])
+@app.get("/technician/", response_model=List[TechnicianResponse], tags=["Technician"])
 def getTechnician(session: SessionDep):
     return get_technician(session)
 
@@ -66,7 +66,7 @@ def deleteTechnician(technicianId: int, session: SessionDep):
         raise HTTPException(status_code=404, detail="Technician not found")
     return {"OK" : True}
 
-@app.patch("/technician/{technicianId}",response_model=Technician, tags=["Technician"])
+@app.patch("/technician/{technicianId}",response_model=TechnicianResponse, tags=["Technician"])
 def editTechnician(technicianId: int, technician:TechnicianBase, session: SessionDep) :
     technicianUpdate = update_technician(session, technicianId, technician)
     if not technicianUpdate:
