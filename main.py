@@ -1,5 +1,6 @@
 from typing import Annotated, List
 from fastapi import FastAPI, Query, HTTPException
+from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from Connection import SessionDep, create_db_and_tables
 from models.technician import Technician, TechnicianResponse, TechnicianBase
@@ -39,9 +40,9 @@ app.add_middleware(
 def on_startup():
     create_db_and_tables()
 
-# @app.get('/')
-# def root():
-#     return "Hello World"
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
 
 @app.post("/technician/",response_model=Technician , tags=["Technician"])
 def createHero(technician: TechnicianBase, session: SessionDep):
