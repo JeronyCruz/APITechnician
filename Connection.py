@@ -1,41 +1,40 @@
 from typing import Annotated
 from fastapi import Depends
 from sqlmodel import SQLModel, create_engine, Session
-from sqlalchemy import text
+import os
+from dotenv import load_dotenv
 
-DB_NAME = "TechnicianDB"
+# ============================================================
+# CONFIGURACIÓN DE CONEXIÓN
+# ============================================================
+load_dotenv()
 
-# URL para conectar a MySQL
-MASTER_URL = "mysql+pymysql://root:IronMan01@localhost/mysql"
-DATABASE_URL = f"mysql+pymysql://root:IronMan01@localhost/{DB_NAME}"
+# Obtener la URL de conexión desde el .env
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Crear la base de datos si no existe
-def ensure_database():
-    try:
-        master_engine = create_engine(MASTER_URL, isolation_level="AUTOCOMMIT")
-        with master_engine.connect() as conn:
-            result = conn.execute(text(f"SHOW DATABASES LIKE '{DB_NAME}'"))
-            if not result.fetchone():
-                conn.execute(text(f"CREATE DATABASE {DB_NAME}"))
-                print(f"Database '{DB_NAME}' created")
-            else:
-                print(f"Database '{DB_NAME}' already exists")
-    except Exception as e:
-        print(f"Error ensuring database exists: {e}")
-        raise
+print("🧩 DATABASE_URL cargada:", DATABASE_URL) 
 
-# Crear tablas
-def create_db_and_tables():
-    ensure_database()
-    SQLModel.metadata.create_all(engine)
-
-# Motor principal
+# ============================================================
+# CREAR MOTOR DE CONEXIÓN
+# ============================================================
 engine = create_engine(DATABASE_URL, echo=True)
 
-# Sesión tipo SQLModel (para usar .exec())
+# ============================================================
+# CREAR TABLAS EN LA BASE DE DATOS
+# ============================================================
+def create_db_and_tables():
+    try:
+        SQLModel.metadata.create_all(engine)
+        print("✅ Tablas creadas correctamente en la base de datos PostgreSQL.")
+    except Exception as e:
+        print(f"❌ Error creando tablas: {e}")
+        raise
+
+# ============================================================
+# SESIÓN DE CONEXIÓN PARA FASTAPI
+# ============================================================
 def get_session():
     with Session(engine) as session:
         yield session
 
-# Para usar con FastAPI
 SessionDep = Annotated[Session, Depends(get_session)]
