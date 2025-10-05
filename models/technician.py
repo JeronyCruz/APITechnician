@@ -3,12 +3,6 @@ from typing import Optional
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Field, Session, SQLModel, Relationship
 
-class TechnicianResponse(SQLModel):
-    technicianId: int
-    name: str
-    time: float
-
-
 class TechnicianBase(SQLModel):
     name: str = Field(index=True, max_length= 50)
     time: int | None = Field(default=None)
@@ -21,4 +15,9 @@ class Technician(TechnicianBase, table =True):
     
     tipo: Optional["TechnicianType"] = Relationship(back_populates="tecnicos")
 
-
+class TechnicianResponse(SQLModel):
+    # Este será el orden en el JSON
+    technicianId: int
+    name: str  
+    time: Optional[float]
+    technicianTypeId: Optional[int]
