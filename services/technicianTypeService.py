@@ -21,7 +21,7 @@ def DeleteTechnicianType(session: Session, technicianTypeId: int) -> bool:
     if not technicianType:
         return False
     session.delete(technicianType)
-    session.commit
+    session.commit()
     return True
 
 def UpdateTechnicianType(session: Session, technicianTypeId: int, technicianType: TechnicianTypeBase) -> TechnicianType | None:
